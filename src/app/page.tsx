@@ -99,7 +99,7 @@ export default function Home() {
           <Link
             href={`/directory/${mostAccessedDirectory.id}`}
             className={`text-lg text-blue-500 hover:underline ${
-              isUpdating ? "pointer-events-none text-gray-400" : ""
+              isUpdating ? "pointer-events-none text-gray-500" : ""
             }`}
             onClick={updateAccessCount}
           >
