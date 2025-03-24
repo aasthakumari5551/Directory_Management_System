@@ -1,0 +1,50 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id          String     @id @default(cuid())
+  email       String     @unique
+  name        String?
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  rootDirId   String?    @unique // Points to the root directory
+  rootDir     Directory? @relation("UserRootDir", fields: [rootDirId], references: [id])
+  files       File[]
+  directories Directory[] @relation("UserDirectories") // All directories owned by the user
+ 
+}
+
+model Directory {
+  id          String     @id @default(cuid())
+  name        String
+  userId      String
+  user        User       @relation("UserDirectories", references: [id], fields: [userId])
+  parentId    String?
+  parent      Directory? @relation("ParentDirectory", fields: [parentId], references: [id])
+  subdirs     Directory[] @relation("ParentDirectory")
+  files       File[]
+  rootFor     User?      @relation("UserRootDir") // User who has this as their root directory
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  accessCount Int        @default(0)
+}
+
+model File {
+  id          String     @id @default(cuid())
+  userId      String
+  user        User       @relation(fields: [userId], references: [id])
+  dirId       String
+  directory   Directory  @relation(fields: [dirId], references: [id])
+  name        String
+  extension   String
+  fileUrl     String   // URL of the file in Appwrite Storage
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+} 
